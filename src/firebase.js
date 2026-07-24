@@ -2,7 +2,7 @@ import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyBav42mYSy-S8GjF8uaavXfy3T9hmPu_hs",
+  apiKey: "AIzaSyCSjLgIDBfXDQ8GliTSLsz6y-yIFBcSBp8",
   authDomain: "priyanka-portfolio-85816.firebaseapp.com",
   projectId: "priyanka-portfolio-85816",
   storageBucket: "priyanka-portfolio-85816.firebasestorage.app",
