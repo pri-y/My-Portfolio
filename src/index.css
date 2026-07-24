@@ -1,0 +1,76 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    color-scheme: light;
+  }
+
+  body {
+    @apply bg-white text-[#0F172A] antialiased overflow-x-hidden selection:bg-[#0B192C] selection:text-white;
+  }
+
+  h1, h2, h3, h4 {
+    font-family: 'Playfair Display', Georgia, serif;
+  }
+
+  /* Custom Corporate Scrollbar */
+  ::-webkit-scrollbar {
+    width: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #F8FAFC;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #CBD5E1;
+    border-radius: 5px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #0B192C;
+  }
+}
+
+@layer utilities {
+  .font-serif-heading {
+    font-family: 'Playfair Display', Georgia, serif;
+  }
+
+  .glow-navy {
+    box-shadow: 0 10px 40px -10px rgba(11, 25, 44, 0.2);
+  }
+
+  .glass-card-corp {
+    @apply bg-white border border-[#E2E8F0] shadow-sm transition-all duration-300;
+  }
+
+  /* Scroll Reveal Utilities */
+  .reveal-card {
+    opacity: 0;
+    transform: translateY(35px);
+    transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .reveal-card.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* Right Side Slide Entrance Keyframe Animation */
+  @keyframes slideInFromRight {
+    0% {
+      opacity: 0;
+      transform: translateX(50px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  .animate-slide-right {
+    animation: slideInFromRight 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+}
