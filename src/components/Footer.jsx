@@ -1,4 +1,4 @@
-import { FaEnvelope, FaLinkedin, FaGithub } from 'react-icons/fa';
+import { FaEnvelope, FaLinkedin } from 'react-icons/fa';
 import { ArrowUp } from 'lucide-react';
 
 export default function Footer() {
@@ -10,13 +10,6 @@ export default function Footer() {
       href: 'https://mail.google.com/mail/?view=cm&fs=1&to=Priyankagupta1697@gmail.com',
       icon: FaEnvelope,
       ariaLabel: 'Send email to Priyanka Gupta in Gmail',
-      target: '_blank',
-    },
-    {
-      name: 'GitHub',
-      href: 'https://github.com/pri-y',
-      icon: FaGithub,
-      ariaLabel: 'Priyanka Gupta GitHub Profile',
       target: '_blank',
     },
     {
