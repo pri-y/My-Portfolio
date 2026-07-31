@@ -24,7 +24,9 @@ async function connectToDatabase() {
     throw new Error('MONGODB_URI is not defined in environment variables on Vercel.');
   }
 
-  const db = await mongoose.connect(MONGODB_URI);
+  const db = await mongoose.connect(MONGODB_URI, {
+    serverSelectionTimeoutMS: 5000,
+  });
   cachedDb = db;
   return db;
 }
@@ -158,4 +160,6 @@ app.use((req, res) => {
   res.status(404).json({ success: false, error: `Route ${req.method} ${req.url} not found.` });
 });
 
-export default app;
+export default function handler(req, res) {
+  return app(req, res);
+}
