@@ -1,4 +1,7 @@
-<img width="1280" height="760" alt="image" src="https://github.com/user-attachments/assets/767698b7-9615-4260-86b8-e6e40b170150" /># 🌟 Priyanka Gupta - Developer Portfolio
+
+ <img width="1280" height="671" alt="image" src="https://github.com/user-attachments/assets/10525410-1ef1-4992-8c70-5faa8d033fe3" />
+
+ # 🌟 Priyanka Gupta - Developer Portfolio
 
 Welcome to my personal portfolio! This website showcases my skills, projects, and experience as a Full-Stack Web Developer. It highlights the technologies I work with, the projects I've built, and provides an easy way to connect with me.
 
