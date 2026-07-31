@@ -82,7 +82,7 @@ export default function Contact() {
       setSubmitting(true);
       setErrorMsg('');
 
-      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api/contact';
+      const API_URL = import.meta.env.VITE_API_URL || '/api/contact';
 
       const res = await fetch(API_URL, {
         method: 'POST',
@@ -105,7 +105,7 @@ export default function Contact() {
       setTimeout(() => setSuccessMsg(''), 5000);
     } catch (err) {
       console.error('Error sending message:', err);
-      setErrorMsg(`Failed to send message: ${err.message || 'Check if server is running on http://localhost:5000'}`);
+      setErrorMsg(`Failed to send message: ${err.message || 'Failed to fetch'}`);
     } finally {
       setSubmitting(false);
     }
