@@ -97,7 +97,7 @@ export default function Contact() {
       }
 
       setFormData({ name: '', email: '', message: '' });
-      setSuccessMsg('Message sent successfully! Saved to MongoDB database.');
+      setSuccessMsg('Message sent successfully! Thank you for reaching out.');
       setTimeout(() => setSuccessMsg(''), 5000);
     } catch (err) {
       console.error('Error sending message:', err);
@@ -186,7 +186,7 @@ export default function Contact() {
               Send a Message
             </h3>
             <p className="text-xs text-[#64748B] mb-6 leading-relaxed">
-              Fill out the form below to send a message directly to MongoDB.
+              Fill out the form below to send a message directly.
             </p>
 
             {successMsg && (

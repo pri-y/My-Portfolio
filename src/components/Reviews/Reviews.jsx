@@ -71,7 +71,7 @@ export default function Reviews() {
       setName('');
       setComment('');
       setRating(5);
-      setSuccessMsg('Thank you! Your review has been submitted successfully to MongoDB.');
+      setSuccessMsg('Thank you! Your review has been submitted successfully.');
       fetchReviews();
       setTimeout(() => setSuccessMsg(''), 5000);
     } catch (err) {
@@ -126,7 +126,7 @@ export default function Reviews() {
               Leave a Review
             </h3>
             <p className="text-xs text-[#64748B] mb-6 leading-relaxed">
-              Your feedback is stored directly in MongoDB.
+              Your feedback is greatly appreciated.
             </p>
 
             {successMsg && (
@@ -203,7 +203,7 @@ export default function Reviews() {
                 disabled={submitting}
                 className="w-full py-3.5 px-6 bg-[#0B192C] text-white font-extrabold text-sm rounded-2xl shadow-md hover:bg-[#1E293B] hover:scale-[1.02] active:scale-95 transition-all duration-300 disabled:opacity-60"
               >
-                {submitting ? 'Saving to MongoDB...' : 'Submit Review'}
+                {submitting ? 'Submitting...' : 'Submit Review'}
               </button>
             </form>
           </div>
@@ -215,7 +215,7 @@ export default function Reviews() {
                 Recent Reviews ({reviews.length})
               </h3>
               <span className="text-xs font-bold text-emerald-600 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200">
-                ● MongoDB Connected
+                ● Verified Reviews
               </span>
             </div>
 
