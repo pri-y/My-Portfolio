@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { 
   FaEnvelope, 
+  FaGithub,
   FaLinkedin, 
   FaMapMarkerAlt, 
   FaCopy, 
@@ -28,6 +29,15 @@ export default function Contact() {
       icon: FaEnvelope,
       target: '_blank',
       copyText: 'Priyankagupta1697@gmail.com',
+    },
+    {
+      id: 'github',
+      name: 'GitHub',
+      value: 'github.com/pri-y',
+      href: 'https://github.com/pri-y',
+      icon: FaGithub,
+      target: '_blank',
+      copyText: 'https://github.com/pri-y',
     },
     {
       id: 'linkedin',
