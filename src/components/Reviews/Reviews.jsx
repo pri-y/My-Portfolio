@@ -1,6 +1,4 @@
 import { useState, useEffect } from 'react';
-import { collection, addDoc, onSnapshot } from 'firebase/firestore';
-import { db } from '../../firebase';
 import { FaStar, FaRegStar, FaQuoteLeft, FaCheckCircle } from 'react-icons/fa';
 
 export default function Reviews() {
@@ -16,33 +14,23 @@ export default function Reviews() {
   const [successMsg, setSuccessMsg] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
 
-  // Real-time Firestore Listener
-  useEffect(() => {
-    const reviewsRef = collection(db, 'reviews');
-    const unsubscribe = onSnapshot(
-      reviewsRef,
-      (snapshot) => {
-        const fetchedReviews = snapshot.docs
-          .map((doc) => ({
-            id: doc.id,
-            ...doc.data(),
-          }))
-          .sort((a, b) => {
-            const dateA = a.createdAt ? new Date(a.createdAt) : new Date(0);
-            const dateB = b.createdAt ? new Date(b.createdAt) : new Date(0);
-            return dateB - dateA;
-          });
-
-        setReviews(fetchedReviews);
-        setLoading(false);
-      },
-      (err) => {
-        console.error('Firestore reviews fetch error:', err);
-        setLoading(false);
+  // Fetch Reviews from MongoDB
+  const fetchReviews = async () => {
+    try {
+      const res = await fetch('/api/reviews');
+      const data = await res.json();
+      if (data.success && Array.isArray(data.data)) {
+        setReviews(data.data);
       }
-    );
+    } catch (err) {
+      console.error('Error fetching reviews:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    return () => unsubscribe();
+  useEffect(() => {
+    fetchReviews();
   }, []);
 
   // Form Submit Handler
@@ -56,25 +44,32 @@ export default function Reviews() {
     try {
       setSubmitting(true);
       setErrorMsg('');
-      await addDoc(collection(db, 'reviews'), {
-        name: name.trim(),
-        rating,
-        comment: comment.trim(),
-        createdAt: new Date().toISOString(),
+
+      const res = await fetch('/api/reviews', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: name.trim(),
+          rating,
+          comment: comment.trim(),
+        }),
       });
+
+      const data = await res.json();
+
+      if (!res.ok || !data.success) {
+        throw new Error(data.error || 'Failed to submit review.');
+      }
 
       setName('');
       setComment('');
       setRating(5);
-      setSuccessMsg('Thank you! Your review has been submitted successfully.');
+      setSuccessMsg('Thank you! Your review has been submitted successfully to MongoDB.');
+      fetchReviews();
       setTimeout(() => setSuccessMsg(''), 5000);
     } catch (err) {
       console.error('Error submitting review:', err);
-      if (err.code === 'permission-denied') {
-        setErrorMsg('Firebase Permission Denied. Please enable Firestore Security Rules to test mode (allow read, write: if true;).');
-      } else {
-        setErrorMsg(`Failed to submit review: ${err.message || 'Check connection or Firestore rules.'}`);
-      }
+      setErrorMsg(`Failed to submit review: ${err.message || 'Server error.'}`);
     } finally {
       setSubmitting(false);
     }
@@ -124,7 +119,7 @@ export default function Reviews() {
               Leave a Review
             </h3>
             <p className="text-xs text-[#64748B] mb-6 leading-relaxed">
-              Your feedback is stored live in Firebase Firestore.
+              Your feedback is stored directly in MongoDB.
             </p>
 
             {successMsg && (
@@ -156,7 +151,7 @@ export default function Reviews() {
                       onMouseLeave={() => setHoverRating(0)}
                       className="text-2xl text-amber-400 focus:outline-none transition-transform hover:scale-125"
                     >
-                      {star <= (hoverRating || rating) ? <FaStar /> : <FaRegStar className="text-slate-300" />}
+                      {star <= (hoverRating || rating) ? <FaStar /> : <FaRegStar className="text-[#CBD5E1]" />}
                     </button>
                   ))}
                   <span className="text-xs font-extrabold text-[#0F172A] ml-2">
@@ -201,7 +196,7 @@ export default function Reviews() {
                 disabled={submitting}
                 className="w-full py-3.5 px-6 bg-[#0B192C] text-white font-extrabold text-sm rounded-2xl shadow-md hover:bg-[#1E293B] hover:scale-[1.02] active:scale-95 transition-all duration-300 disabled:opacity-60"
               >
-                {submitting ? 'Saving to Firestore...' : 'Submit Review'}
+                {submitting ? 'Saving to MongoDB...' : 'Submit Review'}
               </button>
             </form>
           </div>
@@ -213,13 +208,13 @@ export default function Reviews() {
                 Recent Reviews ({reviews.length})
               </h3>
               <span className="text-xs font-bold text-emerald-600 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200">
-                ● Live Sync Active
+                ● MongoDB Connected
               </span>
             </div>
 
             {loading ? (
               <div className="bg-white rounded-3xl p-10 text-center border border-[#E2E8F0] text-[#64748B] text-sm">
-                Loading live reviews from Firebase...
+                Loading reviews...
               </div>
             ) : reviews.length === 0 ? (
               <div className="bg-white rounded-3xl p-10 text-center border border-[#E2E8F0] text-[#64748B]">

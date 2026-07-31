@@ -34,6 +34,16 @@ const contactSchema = new mongoose.Schema({
 
 const Contact = mongoose.model('Contact', contactSchema);
 
+// Review Schema & Model
+const reviewSchema = new mongoose.Schema({
+  name: { type: String, required: true },
+  rating: { type: Number, required: true, default: 5 },
+  comment: { type: String, required: true },
+  createdAt: { type: Date, default: Date.now },
+});
+
+const Review = mongoose.model('Review', reviewSchema);
+
 // Routes
 // POST /api/contact - Save contact message to MongoDB
 app.post('/api/contact', async (req, res) => {
@@ -80,6 +90,44 @@ app.get('/api/contact', async (req, res) => {
   } catch (error) {
     console.error('Error fetching contact messages:', error);
     res.status(500).json({ success: false, error: 'Failed to fetch messages.' });
+  }
+});
+
+// GET /api/reviews - Retrieve reviews from MongoDB
+app.get('/api/reviews', async (req, res) => {
+  try {
+    const reviews = await Review.find().sort({ createdAt: -1 });
+    res.json({ success: true, count: reviews.length, data: reviews });
+  } catch (error) {
+    console.error('Error fetching reviews:', error);
+    res.status(500).json({ success: false, error: 'Failed to fetch reviews.' });
+  }
+});
+
+// POST /api/reviews - Save review to MongoDB
+app.post('/api/reviews', async (req, res) => {
+  try {
+    const { name, rating, comment } = req.body;
+    if (!name || !comment) {
+      return res.status(400).json({ success: false, error: 'Please provide name and comment.' });
+    }
+
+    const newReview = new Review({
+      name: name.trim(),
+      rating: Number(rating) || 5,
+      comment: comment.trim(),
+    });
+
+    await newReview.save();
+
+    res.status(201).json({
+      success: true,
+      message: 'Review saved successfully to MongoDB!',
+      data: newReview,
+    });
+  } catch (error) {
+    console.error('Error saving review:', error);
+    res.status(500).json({ success: false, error: 'Failed to save review to MongoDB.' });
   }
 });
 
