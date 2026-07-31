@@ -89,11 +89,11 @@ export default function Hero() {
               shineSize={20}
               shineFade={30}
               onClick={() => {
-                document.querySelector('#projects')?.scrollIntoView({ behavior: 'smooth' });
+                document.querySelector('#skills')?.scrollIntoView({ behavior: 'smooth' });
               }}
             >
               <SplitText
-                text="View My Projects"
+                text="View Skills"
                 delay={20}
                 duration={0.5}
                 ease="power2.out"
