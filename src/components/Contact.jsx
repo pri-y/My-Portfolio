@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { 
   FaEnvelope, 
   FaLinkedin, 
-  FaPhoneAlt, 
   FaMapMarkerAlt, 
   FaCopy, 
   FaCheck, 
@@ -29,15 +28,6 @@ export default function Contact() {
       icon: FaEnvelope,
       target: '_blank',
       copyText: 'Priyankagupta1697@gmail.com',
-    },
-    {
-      id: 'phone',
-      name: 'Phone',
-      value: '+91-6267457658',
-      href: 'tel:+916267457658',
-      icon: FaPhoneAlt,
-      target: '_self',
-      copyText: '+916267457658',
     },
     {
       id: 'linkedin',

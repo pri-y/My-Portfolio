@@ -1,4 +1,4 @@
-import { FaEnvelope, FaLinkedin, FaPhoneAlt } from 'react-icons/fa';
+import { FaEnvelope, FaLinkedin } from 'react-icons/fa';
 import { ArrowUp } from 'lucide-react';
 
 export default function Footer() {
@@ -11,13 +11,6 @@ export default function Footer() {
       icon: FaEnvelope,
       ariaLabel: 'Send email to Priyanka Gupta in Gmail',
       target: '_blank',
-    },
-    {
-      name: 'Phone',
-      href: 'tel:+916267457658',
-      icon: FaPhoneAlt,
-      ariaLabel: 'Call Priyanka Gupta',
-      target: '_self',
     },
     {
       name: 'LinkedIn',
