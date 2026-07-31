@@ -226,7 +226,7 @@ export default function Reviews() {
               <div className="flex flex-col gap-4 max-h-[620px] overflow-y-auto pr-1">
                 {reviews.map((rev) => (
                   <div
-                    key={rev.id}
+                    key={rev._id || rev.id}
                     className="bg-white border border-[#E2E8F0] rounded-2xl p-6 shadow-sm hover:-translate-y-1 hover:shadow-md transition-all duration-300"
                   >
                     <div className="flex items-center justify-between mb-3">
