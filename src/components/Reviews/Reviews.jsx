@@ -18,7 +18,8 @@ export default function Reviews() {
   const fetchReviews = async () => {
     try {
       const res = await fetch('/api/reviews');
-      const data = await res.json();
+      const text = await res.text();
+      const data = text ? JSON.parse(text) : {};
       if (data.success && Array.isArray(data.data)) {
         setReviews(data.data);
       }
@@ -55,10 +56,16 @@ export default function Reviews() {
         }),
       });
 
-      const data = await res.json();
+      const text = await res.text();
+      let data = {};
+      try {
+        data = text ? JSON.parse(text) : {};
+      } catch (parseErr) {
+        throw new Error(text || `Server returned invalid response (Status ${res.status})`);
+      }
 
       if (!res.ok || !data.success) {
-        throw new Error(data.error || 'Failed to submit review.');
+        throw new Error(data.error || `Server error (Status ${res.status})`);
       }
 
       setName('');

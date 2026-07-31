@@ -51,7 +51,7 @@ const Review = mongoose.models.Review || mongoose.model('Review', reviewSchema);
 
 // Routes
 // POST /api/contact - Save contact message to MongoDB
-app.post('/api/contact', async (req, res) => {
+app.post(['/api/contact', '/contact'], async (req, res) => {
   try {
     await connectToDatabase();
     const { name, email, message } = req.body;
@@ -89,7 +89,7 @@ app.post('/api/contact', async (req, res) => {
 });
 
 // GET /api/contact - Retrieve messages from MongoDB
-app.get('/api/contact', async (req, res) => {
+app.get(['/api/contact', '/contact'], async (req, res) => {
   try {
     await connectToDatabase();
     const contacts = await Contact.find().sort({ createdAt: -1 });
@@ -101,7 +101,7 @@ app.get('/api/contact', async (req, res) => {
 });
 
 // GET /api/reviews - Retrieve reviews from MongoDB
-app.get('/api/reviews', async (req, res) => {
+app.get(['/api/reviews', '/reviews'], async (req, res) => {
   try {
     await connectToDatabase();
     const reviews = await Review.find().sort({ createdAt: -1 });
@@ -113,7 +113,7 @@ app.get('/api/reviews', async (req, res) => {
 });
 
 // POST /api/reviews - Save a new review to MongoDB
-app.post('/api/reviews', async (req, res) => {
+app.post(['/api/reviews', '/reviews'], async (req, res) => {
   try {
     await connectToDatabase();
     const { name, rating, comment } = req.body;
@@ -141,7 +141,7 @@ app.post('/api/reviews', async (req, res) => {
 });
 
 // Health check endpoint
-app.get('/api/health', async (req, res) => {
+app.get(['/api/health', '/health'], async (req, res) => {
   try {
     await connectToDatabase();
     res.json({
@@ -151,6 +151,11 @@ app.get('/api/health', async (req, res) => {
   } catch (error) {
     res.status(500).json({ status: 'error', error: error.message });
   }
+});
+
+// Catch-all 404 JSON middleware to ensure server always returns valid JSON
+app.use((req, res) => {
+  res.status(404).json({ success: false, error: `Route ${req.method} ${req.url} not found.` });
 });
 
 export default app;

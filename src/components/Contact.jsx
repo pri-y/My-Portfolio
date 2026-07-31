@@ -84,7 +84,13 @@ export default function Contact() {
         }),
       });
 
-      const data = await res.json();
+      const text = await res.text();
+      let data = {};
+      try {
+        data = text ? JSON.parse(text) : {};
+      } catch (parseErr) {
+        throw new Error(text || `Server returned invalid response (Status ${res.status})`);
+      }
 
       if (!res.ok || !data.success) {
         throw new Error(data.error || 'Server error, please try again.');
