@@ -19,6 +19,8 @@
     "lucide-react": "^1.26.0",
     "mongoose": "^9.8.1",
     "ogl": "^1.0.11",
+    "pdf-lib": "^1.17.1",
+    "pdfjs-dist": "^6.2.108",
     "react": "^19.2.7",
     "react-dom": "^19.2.7",
     "react-icons": "^5.7.0"
