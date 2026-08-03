@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
+import { handleResumeDownload } from '../utils/downloadResume';
 import { 
   Bot, 
   X, 
@@ -422,10 +423,7 @@ export default function Chatbot() {
       }
     } else if (action.href) {
       if (action.download) {
-        const a = document.createElement('a');
-        a.href = action.href;
-        a.download = 'Priyanka_Gupta_Resume.pdf';
-        a.click();
+        handleResumeDownload();
       } else {
         window.open(action.href, '_blank');
       }

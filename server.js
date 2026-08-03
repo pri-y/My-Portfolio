@@ -2,6 +2,7 @@ import express from 'express';
 import mongoose from 'mongoose';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import nodemailer from 'nodemailer';
 
 dotenv.config();
 
@@ -43,6 +44,17 @@ const reviewSchema = new mongoose.Schema({
 });
 
 const Review = mongoose.model('Review', reviewSchema);
+
+// Resume Download Schema & Model
+const resumeDownloadSchema = new mongoose.Schema({
+  userAgent: { type: String },
+  referrer: { type: String },
+  screenResolution: { type: String },
+  ip: { type: String },
+  downloadedAt: { type: Date, default: Date.now },
+});
+
+const ResumeDownload = mongoose.model('ResumeDownload', resumeDownloadSchema);
 
 // Routes
 // POST /api/contact - Save contact message to MongoDB
@@ -128,6 +140,83 @@ app.post('/api/reviews', async (req, res) => {
   } catch (error) {
     console.error('Error saving review:', error);
     res.status(500).json({ success: false, error: 'Failed to save review to MongoDB.' });
+  }
+});
+
+// POST /api/notify-resume-download - Track download and trigger notification
+app.post('/api/notify-resume-download', async (req, res) => {
+  try {
+    const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'Unknown IP';
+    const { userAgent, referrer, screenResolution } = req.body || {};
+
+    const downloadLog = new ResumeDownload({
+      ip,
+      userAgent: userAgent || req.headers['user-agent'],
+      referrer: referrer || req.headers['referer'],
+      screenResolution,
+      downloadedAt: new Date(),
+    });
+
+    await downloadLog.save();
+
+    // Send Email Notification if SMTP / Nodemailer configured
+    const EMAIL_USER = process.env.EMAIL_USER;
+    const EMAIL_PASS = process.env.EMAIL_PASS;
+    const NOTIFY_EMAIL = process.env.NOTIFY_EMAIL || 'Priyankagupta1697@gmail.com, priyankaguptajpk@gmail.com';
+
+    if (EMAIL_USER && EMAIL_PASS) {
+      try {
+        const transporter = nodemailer.createTransport({
+          service: 'gmail',
+          auth: {
+            user: EMAIL_USER,
+            pass: EMAIL_PASS,
+          },
+        });
+
+        await transporter.sendMail({
+          from: `"Portfolio Alerts" <${EMAIL_USER}>`,
+          to: NOTIFY_EMAIL,
+          subject: '📄 Resume Downloaded on Portfolio!',
+          html: `
+            <div style="font-family: Arial, sans-serif; padding: 20px; color: #333;">
+              <h2 style="color: #0284c7;">🎉 Resume Download Notification!</h2>
+              <p>Someone just downloaded your resume from your portfolio website.</p>
+              <table style="width: 100%; border-collapse: collapse; margin-top: 15px;">
+                <tr><td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;">Time:</td><td style="padding: 8px; border: 1px solid #ddd;">${new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}</td></tr>
+                <tr><td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;">Device / Browser:</td><td style="padding: 8px; border: 1px solid #ddd;">${userAgent || 'N/A'}</td></tr>
+                <tr><td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;">IP Address:</td><td style="padding: 8px; border: 1px solid #ddd;">${ip}</td></tr>
+                <tr><td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;">Referrer:</td><td style="padding: 8px; border: 1px solid #ddd;">${referrer || 'Direct'}</td></tr>
+              </table>
+              <br/>
+              <p style="font-size: 12px; color: #777;">Sent automatically by your Portfolio App.</p>
+            </div>
+          `,
+        });
+        console.log('Resume download email notification sent successfully!');
+      } catch (mailError) {
+        console.error('Nodemailer error (check EMAIL_USER / EMAIL_PASS in .env):', mailError.message);
+      }
+    }
+
+    res.status(201).json({
+      success: true,
+      message: 'Resume download recorded in MongoDB and notification triggered!',
+      downloadId: downloadLog._id,
+    });
+  } catch (error) {
+    console.error('Error tracking resume download:', error);
+    res.status(500).json({ success: false, error: 'Failed to record resume download.' });
+  }
+});
+
+// GET /api/notify-resume-download - Retrieve download logs from MongoDB
+app.get('/api/notify-resume-download', async (req, res) => {
+  try {
+    const downloads = await ResumeDownload.find().sort({ downloadedAt: -1 }).limit(50);
+    res.json({ success: true, count: downloads.length, data: downloads });
+  } catch (error) {
+    res.status(500).json({ success: false, error: 'Failed to fetch resume downloads.' });
   }
 });
 

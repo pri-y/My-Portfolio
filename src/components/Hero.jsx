@@ -3,6 +3,7 @@ import TextType from './TextType';
 import SplitText from './SplitText';
 import SpecularButton from './SpecularButton';
 import SideRays from './SideRays';
+import { handleResumeDownload } from '../utils/downloadResume';
 
 export default function Hero() {
   return (
@@ -141,12 +142,7 @@ export default function Hero() {
               intensity={1}
               shineSize={20}
               shineFade={30}
-              onClick={() => {
-                const a = document.createElement('a');
-                a.href = '/Priyanka_Gupta_Resume.pdf';
-                a.download = 'Priyanka_Gupta_Resume.pdf';
-                a.click();
-              }}
+              onClick={handleResumeDownload}
             >
               <Download className="w-3.5 h-3.5 text-[#38BDF8]" />
               <SplitText
