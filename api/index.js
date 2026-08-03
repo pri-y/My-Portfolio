@@ -54,10 +54,14 @@ const Review = mongoose.models.Review || mongoose.model('Review', reviewSchema);
 
 // Resume Download Schema & Model
 const resumeDownloadSchema = new mongoose.Schema({
+  name: { type: String },
+  email: { type: String },
   userAgent: { type: String },
   referrer: { type: String },
   screenResolution: { type: String },
   ip: { type: String },
+  location: { type: String },
+  networkProvider: { type: String },
   downloadedAt: { type: Date, default: Date.now },
 });
 
@@ -158,11 +162,16 @@ app.post(['/api/reviews', '/reviews'], async (req, res) => {
 app.post(['/api/notify-resume-download', '/notify-resume-download'], async (req, res) => {
   try {
     await connectToDatabase();
-    const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'Unknown IP';
-    const { userAgent, referrer, screenResolution } = req.body || {};
+    const rawIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'Unknown IP';
+    const { name, email, userAgent, referrer, screenResolution, userIp, location, networkProvider } = req.body || {};
+    const ip = userIp || rawIp;
 
     const downloadLog = new ResumeDownload({
+      name: name || 'Anonymous',
+      email: email || 'N/A',
       ip,
+      location: location || 'Unknown Location',
+      networkProvider: networkProvider || 'Unknown Network',
       userAgent: userAgent || req.headers['user-agent'],
       referrer: referrer || req.headers['referer'],
       screenResolution,
@@ -174,7 +183,7 @@ app.post(['/api/notify-resume-download', '/notify-resume-download'], async (req,
     // Send Email Notification if SMTP / Nodemailer configured
     const EMAIL_USER = process.env.EMAIL_USER;
     const EMAIL_PASS = process.env.EMAIL_PASS;
-    const NOTIFY_EMAIL = process.env.NOTIFY_EMAIL || 'Priyankagupta1697@gmail.com, priyankaguptajpk@gmail.com';
+    const NOTIFY_EMAIL = process.env.NOTIFY_EMAIL || 'priyankaguptajpk@gmail.com';
 
     if (EMAIL_USER && EMAIL_PASS) {
       try {
@@ -189,15 +198,19 @@ app.post(['/api/notify-resume-download', '/notify-resume-download'], async (req,
         await transporter.sendMail({
           from: `"Portfolio Alerts" <${EMAIL_USER}>`,
           to: NOTIFY_EMAIL,
-          subject: '📄 Resume Downloaded on Portfolio!',
+          subject: `🚨 Resume Downloaded by ${name || 'Visitor'} in ${location || 'Unknown Location'}!`,
           html: `
             <div style="font-family: Arial, sans-serif; padding: 20px; color: #333;">
               <h2 style="color: #0284c7;">🎉 Resume Download Notification!</h2>
-              <p>Someone just downloaded your resume from your portfolio website.</p>
+              <p>Someone just submitted their details and downloaded your resume from your portfolio website.</p>
               <table style="width: 100%; border-collapse: collapse; margin-top: 15px;">
+                <tr><td style="padding: 8px; border: 1px solid #ddd; font-weight: bold; width: 140px;">Visitor Name:</td><td style="padding: 8px; border: 1px solid #ddd; color: #0284c7; font-weight: bold;">${name || 'N/A'}</td></tr>
+                <tr><td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;">Visitor Email:</td><td style="padding: 8px; border: 1px solid #ddd; color: #0284c7; font-weight: bold;">${email || 'N/A'}</td></tr>
                 <tr><td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;">Time:</td><td style="padding: 8px; border: 1px solid #ddd;">${new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}</td></tr>
-                <tr><td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;">Device / Browser:</td><td style="padding: 8px; border: 1px solid #ddd;">${userAgent || 'N/A'}</td></tr>
+                <tr><td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;">Location:</td><td style="padding: 8px; border: 1px solid #ddd;">${location || 'N/A'}</td></tr>
+                <tr><td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;">Network / ISP:</td><td style="padding: 8px; border: 1px solid #ddd;">${networkProvider || 'N/A'}</td></tr>
                 <tr><td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;">IP Address:</td><td style="padding: 8px; border: 1px solid #ddd;">${ip}</td></tr>
+                <tr><td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;">Device / Browser:</td><td style="padding: 8px; border: 1px solid #ddd;">${userAgent || 'N/A'}</td></tr>
                 <tr><td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;">Referrer:</td><td style="padding: 8px; border: 1px solid #ddd;">${referrer || 'Direct'}</td></tr>
               </table>
               <br/>

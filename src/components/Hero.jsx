@@ -1,11 +1,14 @@
+import { useState } from 'react';
 import { Download, ArrowRight } from 'lucide-react';
 import TextType from './TextType';
 import SplitText from './SplitText';
 import SpecularButton from './SpecularButton';
 import SideRays from './SideRays';
-import { handleResumeDownload } from '../utils/downloadResume';
+import ResumeModal from './ResumeModal';
 
 export default function Hero() {
+  const [isResumeModalOpen, setIsResumeModalOpen] = useState(false);
+
   return (
     <section id="hero" className="relative min-h-screen pt-36 pb-20 px-6 flex items-center justify-center max-w-full mx-auto overflow-hidden bg-[#0B192C]">
       {/* SideRays WebGL Light Rays Animation Backdrop from React Bits */}
@@ -142,7 +145,7 @@ export default function Hero() {
               intensity={1}
               shineSize={20}
               shineFade={30}
-              onClick={handleResumeDownload}
+              onClick={() => setIsResumeModalOpen(true)}
             >
               <Download className="w-3.5 h-3.5 text-[#38BDF8]" />
               <SplitText
@@ -175,6 +178,12 @@ export default function Hero() {
           </div>
         </div>
       </div>
+
+      {/* Resume Download Request Modal */}
+      <ResumeModal
+        isOpen={isResumeModalOpen}
+        onClose={() => setIsResumeModalOpen(false)}
+      />
     </section>
   );
 }
